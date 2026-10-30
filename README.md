@@ -97,12 +97,6 @@ or
 cat input.eti | ./build/asa_check
 ```
 
-After installation, the binary is available as:
-
-```bash
-asa_check input.eti
-```
-
 Example ASA output (timestamp shown as a format placeholder):
 
 ```text

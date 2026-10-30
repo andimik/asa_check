@@ -1,6 +1,6 @@
 # ASA ETI Check
 
-`asa_check` reads raw 6144-byte DAB ETI(NI) frames and decodes the Emergency Warning System (EWS), also known as ASA, defined by ETSI TS 104 089.
+`asa_check` (for Windows and Linux) reads raw 6144-byte DAB ETI(NI) frames and decodes the Emergency Warning System (EWS), also known as Automatic Safety Alert (ASA), defined by ETSI TS 104 089.
 
 The decoder:
 
@@ -13,7 +13,60 @@ The decoder:
 
 ASA carries hierarchical alert-area codes, not GPS coordinates. The reported centre is derived from an area's bounds for convenience and is explicitly not a transmitted position.
 
-## Build
+# Windows 
+
+## exe file for Windows (command line)
+
+There is already a compiled file in `build-win32` subdirectory. If you anyway want to (cross-)compile it, see following chapter.
+
+## Cross-compile under Linux for Windows 32bit
+
+You need to install the 32-bit MinGW-w64 toolchain, CMake, and standard build utilities. Open your Linux terminal and run:
+
+```bash
+sudo apt update
+sudo apt install mingw-w64 cmake make git
+```
+
+To tell CMake to build for 32-bit Windows instead of your host Linux system, you need to pass the MinGW compilers and target architecture flags. Run the following command to generate the build files:
+
+```bash
+cmake -S . -B build-win32 \
+  -DCMAKE_SYSTEM_NAME=Windows \
+  -DCMAKE_C_COMPILER=i686-w64-mingw32-gcc \
+  -DCMAKE_CXX_COMPILER=i686-w64-mingw32-g++ \
+  -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++ -static"
+```
+
+Once the configuration is complete, compile the project using CMake:
+
+```bash
+cmake --build build-win32
+```
+
+After the compilation completes successfully, you will find your 32-bit Windows executable inside the build folder:
+
+```
+ls -l build-win32/asa_check.exe
+```
+
+## Run under Windows in command prompt
+
+```
+asa_check.exe input.eti
+```
+
+
+# Linux
+
+## Build instructions for Linux
+
+You need to install the standard build utilities. Open your Linux terminal and run:
+
+```
+sudo apt update
+sudo apt install cmake make git
+```
 
 Typical local build flow:
 
@@ -36,6 +89,11 @@ cmake --build build
 
 ```bash
 ./build/asa_check input.eti
+```
+
+or
+
+```bash
 cat input.eti | ./build/asa_check
 ```
 
@@ -80,7 +138,7 @@ b0b4787b212d4a1e79aabf2627c62d9e34f555ad296c949e43f476eb7d0c6ece
 Run it with:
 
 ```bash
-./build/asa_check EWS1.eti
+asa_check EWS1.eti
 ```
 
 The current input reader supports raw ETI(NI) files or stdin. It does not unwrap network transport protocols or framed ETI containers.
